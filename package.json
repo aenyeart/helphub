@@ -4,16 +4,16 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-      "start": "node index.js",
-      "lint": "eslint **/*.js",
-      "test": "jest --verbose --coverage",
-      "test-watch": "jest --watchAll --verbose --coverage"
+        "start": "node index.js",
+        "lint": "eslint **/*.js",
+        "test": "jest --verbose --coverage",
+        "test-watch": "jest --watchAll --verbose --coverage"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
-      "socket.io": "^4.4.1",
-      "uuid": "^8.3.2"
+        "socket.io": "^4.4.1",
+        "uuid": "^8.3.2"
     }
-  }
+}

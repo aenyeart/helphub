@@ -52,7 +52,7 @@ helpHub.on('connection', (socket) => {
   });
 
 
-  
+
 /*
 ORDER OF OPERATIONS:
 - customer requests help  (new 'pickup')
