@@ -3,20 +3,11 @@
 const uuid = require('uuid').v4;
 const socketio = require('socket.io');
 const server = socketio(3000);
-const helpHub = server.of('/caps');
+const helpHub = server.of('/help');
 
 let current = 0; // note that restarting server will reset ticket counter
 
 const queue = {
-  // tickets: {},
-  // newTicket: function (ticket) {
-  //   this.ticket[id] = ticket;
-  //   return id;
-  // },
-  // removeTicket: function (id) {
-  //   delete this.ticket[id];
-  // },
-
   tickets: [],  // using array to model a FIFO queue: push() to add to end, shift() to pull from front.
   newTicket: function (ticket) {
     ticket.id = current;
@@ -25,10 +16,17 @@ const queue = {
     return ticket.id;
   },
   removeTicket: function (id) {
-    delete this.ticket[id];
+    delete queue.ticket[id];
   },
-
 };
+
+// class event {  // not being used anywhere yet
+//   constructor(event, time, payload) {
+//     this.event = event;
+//     this.time = time;
+//     this.payload = payload;
+//   }
+// }
 
 function logger(event, payload) {
   let timestamp = new Date();
@@ -37,20 +35,36 @@ function logger(event, payload) {
 }
 
 helpHub.on('connection', (socket) => {
-  console.log(`socket.io is connected ${socket.id}`);
+  console.log(`socket.io is connected ${socket.id}`); // TODO might need to assign id on Client.. check this.
 
-//   socket.on('join', ticketId => {
-//     socket.join(ticketId);
-//     helpHub.emit('join', ticketId);
-
-//   });
+  // TODO want to emit to this socket "you are connected" or "Ready for request"
 
   socket.on('Help Requested', (payload) => {
-      socket.join(payload);
-      helpHub.emit('join', payload);
+      // socket.join('payload'); // TODO needs to be more specific on payload either payload id or payload username
+      socket.join('boogers'); // .join('boogers')
+      // in order to send messages to only sockets that are 'in' this room:
+      helpHub.to('boogers').emit('picking');
+      socket.broadcast('picking');
+
+
+      helpHub.emit('join', payload); 
       logger('Help Requested', payload);
   });
 
+  socket.on('Assinging ticket', payload => {
+    socket.
+  },
+
+
+  socket.on('Complete', (payload) => {
+    logger('Complete', payload);
+    socket.emit('Complete', payload);
+    delete queue[payload.ticket.id];
+
+   
+
+
+  })
 
 
 /*
