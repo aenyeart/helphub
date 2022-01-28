@@ -52,6 +52,18 @@ helpHub.on('connection', (socket) => {
   });
 
 
+  
+/*
+ORDER OF OPERATIONS:
+- customer requests help  (new 'pickup')
+- hub generates ticket in queue (pickup event in queue for drivers)
+- hub returns confirmation to customer (---)
+- hub assigns ticket to worker (driver picks up package, emits 'in-transit')
+- if worker available, worker gets ticket, sends 'in-progress' to hub ('in-transit')
+- hub sends 'in-progress' to customer (not exact, but similar to 'delivered' message to vendor)
+- worker sends 'complete' to hub ('delivered')
+
+*/
 
 
 
