@@ -40,14 +40,14 @@ helpHub.on('connection', (socket) => {
   // TODO want to emit to this socket "you are connected" or "Ready for request"
 
   socket.on('Help Requested', (payload) => {
-      // socket.join('payload'); // TODO needs to be more specific on payload either payload id or payload username
-      socket.join('boogers'); // .join('boogers')
-      // in order to send messages to only sockets that are 'in' this room:
-      helpHub.to('boogers').emit('picking');
-      socket.broadcast('picking');
+      socket.join(payload.username); // TODO needs to be more specific on payload either payload id or payload username
+      // socket.join('boogers'); // .join('boogers')
+      // // in order to send messages to only sockets that are 'in' this room:
+      // helpHub.to('boogers').emit('picking');
+      // socket.broadcast('picking');
 
 
-      helpHub.emit('join', payload); 
+
       logger('Help Requested', payload);
   });
 
