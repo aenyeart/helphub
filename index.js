@@ -2,7 +2,7 @@
 
 const uuid = require('uuid').v4;
 const socketio = require('socket.io');
-const server = socketio(3000);
+const server = socketio(process.env.PORT || 3000);
 const helpHub = server.of('/help');
 
 const queue = {
@@ -25,8 +25,7 @@ function logger(event, payload) {
 
 // HelpHub connected 
 helpHub.on('connection', (socket) => {
-  console.log(`socket.io is connected ${socket.id}`);
-  // socket.join(socket.id); 
+  console.log(`New socket is connected: ${socket.id}`);
   socket.emit('Ready For Request', { customerSocket: socket.id }); // emit to CUSTOMER helphub is ready
 
   socket.on('Help Requested', (payload) => { 
@@ -37,16 +36,23 @@ helpHub.on('connection', (socket) => {
       username: payload.username,
       description: payload.description,
       id: socket.id,
-    }
+    };
 
     queue.newTicket(ticket); // add it to queue
-    helpHub.emit('Ticket Generated', ticket.id); // emit to ALL that ticket is generated
+    helpHub.emit('Ticket Generated', ticket.id); // emits to ALL that ticket is generated
+    /* 
+    * PROBLEM: This is showing up on other customers' terminals.
+    * SOLUTION: Create a room for workers, then selectively broadcast 'ticket generated' to only the specific customer, and the workers room. 
+    */
+
+
+
     logger('Ticket Generated', ticket); // log ticket generation
   });
-// when WORKER client signs in or completes a ticket, emits "standing by"
+  // when WORKER client signs in or completes a ticket, emits "standing by"
   
   // SERVER on 'standing by' pops next ticket off queue, assigns to that WORKER via payload
-  socket.on('Standing By', (socket) => {
+  socket.on('Standing By', (payload) => {
     logger('Standing By', payload);
 
     if (queue.tickets.length > 0) {
@@ -71,7 +77,7 @@ helpHub.on('connection', (socket) => {
     logger('Complete', payload.ticket);
   });
  
-
+});
 /*
 ORDER OF OPERATIONS:
 - CUSTOMER requests help  (new 'pickup')
