@@ -19,33 +19,39 @@ Welcome to the Help Hub. This is a place where clients can request help for vari
 
 ## UML 
 
-![Help Center UML](UML.jpg)
+![Help Center UML](./lib/UML.jpg)
 
 ## Authors
 
 **Andrew** *'I have a question'* **Enyeart**
+
 **Jacob** *'insert clever saying here'* **Choi**
-**Señor Joey** *'Call me Joey'* **Hernandez**
+
+**Señor Joey** *"Call me Joey"* **Hernandez**
+
 **Dario** *'the invisible kid'* **Vitorte**
 
-### Deployed Site
-
-[This is the deployed site](thisIsTheHroku.com)
+### Deployed Server
+[https://helphub-server.herokuapp.com](https://helphub-server.herokuapp.com)
 
 ### Installation
 
 **Step One**
 
-- begin by running: `git clone` git@github.com:aenyeart/helphub.git 
+begin by running: 
 
-- Also run this as well: `git clone` git@github.com:aenyeart/helphub-client.git
+`git clone git@github.com:aenyeart/helphub.git`
+
+Also run this as well: 
+
+`git clone git@github.com:aenyeart/helphub-client.git`
 
 **Step Two**
 
 run: `cd helphub` 
 then: `npm install`
 
-*repeat this for 'helphub client'*
+*repeat step two for 'helphub-client'*
 
 ### How to Use
 
@@ -81,32 +87,6 @@ Ticket', {
   type: ('lab', 'help'), required,
 }
 
-### Routes
-
-`api/v1` (no authentication required).
-
-`POST /:model` requires model param and object returns created objects from database.
-
-`GET /:model` requires model param returns all objects from model database table.
-
-`GET /:model/:id` requires model and id params returns object in model database with that specific id.
-
-`PUT /:model/:id` requires model and id params plus object to update returns updated object.
-
-`DELETE /:model/:id` requires model and id params returns status code either successful or not.
-
-**Customer**
-
-`POST /request`, requires a Customer object: returns customer username and 'help' request description.
-
-**Service Worker**
-
-`POST /worker`, requires a Worker object: returns Worker name and id.
-
-**Help Tickets**
-
-`GET /tickets`, requires a Ticket object: returns array containing the help ticket request description and a unique id.
-
 ## Features
 
 **Help Ticket Assignment to Completion**
@@ -132,4 +112,4 @@ The testing serves to verify complete testing of the routers middleware, and the
 ### Credit and Co-Conspirators
 
 This lovely code was largely written by the immaculate **Andrew Enyeart** and **Jacob Choi**. **Joey Hernandez** dutifully provided snarky commentary and moral support, some coding, some writing (as you are reading) and, yup. 
-*No one is really sure where **Dario Diorte** is, we were thinking homing pigeons next, maybe.*
+*No one is really sure where **Dario Vitorte** is, we were thinking homing pigeons next, maybe.*
