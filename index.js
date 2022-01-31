@@ -5,18 +5,15 @@ const socketio = require('socket.io');
 const server = socketio(3000);
 const helpHub = server.of('/help');
 
-let current = 0; // note that restarting server will reset ticket counter
-
 const queue = {
   tickets: [],  // using array to model a FIFO queue: push() to add to end, shift() to pull from front.
   newTicket: function (ticket) {
-    ticket.id = current;
     this.tickets.push(ticket);
-    current++;
     return ticket.id;
   },
   removeTicket: function (id) {
-    delete queue.ticket[id];
+    //delete queue.ticket[id];
+    return queue.tickets.shift();
   },
 };
 
@@ -34,48 +31,74 @@ function logger(event, payload) {
   console.log(payload);
 }
 
+// HelpHub connected 
 helpHub.on('connection', (socket) => {
-  console.log(`socket.io is connected ${socket.id}`); // TODO might need to assign id on Client.. check this.
+  console.log(`socket.io is connected ${socket.id}`);
+  // socket.join(socket.id); 
+  socket.emit('Ready For Request', { customerSocket: socket.id }); // emit to CUSTOMER helphub is ready
 
-  // TODO want to emit to this socket "you are connected" or "Ready for request"
+  socket.on('Help Requested', (payload) => { 
+    logger('Help Requested', payload); // log help requested
 
-  socket.on('Help Requested', (payload) => {
-      socket.join(payload.username); // TODO needs to be more specific on payload either payload id or payload username
-      // socket.join('boogers'); // .join('boogers')
-      // // in order to send messages to only sockets that are 'in' this room:
-      // helpHub.to('boogers').emit('picking');
-      // socket.broadcast('picking');
+    // generate a ticket
+    let ticket = {
+      username: payload.username,
+      description: payload.description,
+      id: socket.id,
+    }
 
+    queue.newTicket(ticket); // add it to queue
+    socket.emit('Ticket Generated', ticket.id); // emit to CUSTOMER that ticket is generated
+    logger('Ticket Generated', ticket); // log ticket generation
+  });
+// when WORKER client signs in or completes a ticket, emits "standing by"
+  
+// SERVER listens for 'standing by',
+  socket.on('Standing By', (payload) => {
+    console.log(payload);
+  });
+  // SERVER on 'standing by' pops next ticket off queue, assigns to that WORKER via payload
+  socket.on('Standing By', (socket) => {
+    console.log(queue.tickets);
+    let currentTicket = queue.removeTicket();
+    socket.emit('Assigning Ticket', currentTicket); // emits to socket the returned val of callback (which is the next ticket in queue)
+    socket.broadcast.to(payload.ticket.id).emit('Assigning Ticket', currentTicket, socket.id, worker.id); // TEST do all these arguments get packaged together as 'payload'?
+  });
+  // SERVER emits to CUSTOMER and WORKER 'assigning ticket' 
+  helpHub.on('Assigning Ticket', (payload) => { // TEST does this listen to its own emission / utterance ?
+  
+    logger('Ticket Assigned', worker.id);
+  });
+  // on 'assigning ticket' WORKER emits in-progress
+  
+  // --> SERVER relays 'in-progress' to CUSTOMER
+  socket.emit('In-Progress', socket.id)
+  // setTimeout, WORKER emits 'Complete'
+  // --> SERVER relays 'complete' to CUSTOMER
 
+  // --> CUSTOMER logs 'complete', disconnects socket
+  // WORKER emits 'standing by'
 
-      logger('Help Requested', payload);
+  socket.on('Assigning Ticket', payload => {
+    // socket.
   });
 
-  socket.on('Assinging ticket', payload => {
-    socket.
-  },
-
-
+// Help rendered, ticket complete
   socket.on('Complete', (payload) => {
-    logger('Complete', payload);
-    socket.emit('Complete', payload);
-    delete queue[payload.ticket.id];
-
-   
-
-
+    logger('Complete', payload); // log ticket completion
+    socket.emit('Complete', payload); // emit complete
   })
 
 
 /*
 ORDER OF OPERATIONS:
-- customer requests help  (new 'pickup')
+- CUSTOMER requests help  (new 'pickup')
 - hub generates ticket in queue (pickup event in queue for drivers)
-- hub returns confirmation to customer (---)
-- hub assigns ticket to worker (driver picks up package, emits 'in-transit')
-- if worker available, worker gets ticket, sends 'in-progress' to hub ('in-transit')
-- hub sends 'in-progress' to customer (not exact, but similar to 'delivered' message to vendor)
-- worker sends 'complete' to hub ('delivered')
+- hub returns confirmation to CUSTOMER (---)
+- hub assigns ticket to WORKER (driver picks up package, emits 'in-transit')
+- if WORKER available, WORKER gets ticket, sends 'in-progress' to hub ('in-transit')
+- hub sends 'in-progress' to CUSTOMER (not exact, but similar to 'delivered' message to vendor)
+- WORKER sends 'complete' to hub ('delivered')
 
 */
 
@@ -111,4 +134,9 @@ ORDER OF OPERATIONS:
 
 // });
 
+// ticket.on('connection', (socket) => {
+//   socket.on('add ticket', ticket);
+//   ticket.emit('ticket added', payload);
+// });
 
+  // socket.broadcast.to('ID').emit( 'send msg', {somedata : somedata_server} );
