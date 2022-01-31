@@ -17,14 +17,6 @@ const queue = {
   },
 };
 
-// class event {  // not being used anywhere yet
-//   constructor(event, time, payload) {
-//     this.event = event;
-//     this.time = time;
-//     this.payload = payload;
-//   }
-// }
-
 function logger(event, payload) {
   let timestamp = new Date();
   console.log('EVENT: ' + event, 'updatedAt: ', + timestamp);
@@ -48,47 +40,37 @@ helpHub.on('connection', (socket) => {
     }
 
     queue.newTicket(ticket); // add it to queue
-    socket.emit('Ticket Generated', ticket.id); // emit to CUSTOMER that ticket is generated
+    helpHub.emit('Ticket Generated', ticket.id); // emit to ALL that ticket is generated
     logger('Ticket Generated', ticket); // log ticket generation
   });
 // when WORKER client signs in or completes a ticket, emits "standing by"
   
-// SERVER listens for 'standing by',
-  socket.on('Standing By', (payload) => {
-    console.log(payload);
-  });
   // SERVER on 'standing by' pops next ticket off queue, assigns to that WORKER via payload
   socket.on('Standing By', (socket) => {
-    console.log(queue.tickets);
-    let currentTicket = queue.removeTicket();
-    socket.emit('Assigning Ticket', currentTicket); // emits to socket the returned val of callback (which is the next ticket in queue)
-    socket.broadcast.to(payload.ticket.id).emit('Assigning Ticket', currentTicket, socket.id, worker.id); // TEST do all these arguments get packaged together as 'payload'?
+    logger('Standing By', payload);
+
+    if (queue.tickets.length > 0) {
+      let currentTicket = queue.removeTicket();
+      socket.emit('Assigning Ticket', currentTicket); // this goes to WORKER
+      socket.broadcast.to(payload.ticket.id).emit('Assigning Ticket', currentTicket); // this goes to CUSTOMER
+    } else {
+      socket.emit('No tickets available'); // this goes to WORKER
+    }
   });
-  // SERVER emits to CUSTOMER and WORKER 'assigning ticket' 
-  helpHub.on('Assigning Ticket', (payload) => { // TEST does this listen to its own emission / utterance ?
-  
-    logger('Ticket Assigned', worker.id);
-  });
+
   // on 'assigning ticket' WORKER emits in-progress
-  
   // --> SERVER relays 'in-progress' to CUSTOMER
-  socket.emit('In-Progress', socket.id)
+  helpHub.on('In Progress', (socket) => {
+    socket.emit('In-Progress', socket.id);
+    logger('In Progress', socket.id);
+  });
   // setTimeout, WORKER emits 'Complete'
   // --> SERVER relays 'complete' to CUSTOMER
-
-  // --> CUSTOMER logs 'complete', disconnects socket
-  // WORKER emits 'standing by'
-
-  socket.on('Assigning Ticket', payload => {
-    // socket.
+  helpHub.on('Complete', (payload) => {
+    socket.broadcast.to(payload.ticket.id).emit('Complete', payload.ticket);
+    logger('Complete', payload.ticket);
   });
-
-// Help rendered, ticket complete
-  socket.on('Complete', (payload) => {
-    logger('Complete', payload); // log ticket completion
-    socket.emit('Complete', payload); // emit complete
-  })
-
+ 
 
 /*
 ORDER OF OPERATIONS:
@@ -101,16 +83,15 @@ ORDER OF OPERATIONS:
 - WORKER sends 'complete' to hub ('delivered')
 
 */
-
-
-
-
-
-
-
-
-
-
+ // // --> CUSTOMER logs 'complete', disconnects socket
+  //   socket.on("Help Complete Disconnecting", () => {
+  //     console.log(socket.id); // the Set contains at least the socket ID
+  //   });
+  
+  //   socket.on("disconnect", () => {
+  //     // socket.rooms.size === 0
+  //   });
+  // });
 
 
 
@@ -139,4 +120,13 @@ ORDER OF OPERATIONS:
 //   ticket.emit('ticket added', payload);
 // });
 
-  // socket.broadcast.to('ID').emit( 'send msg', {somedata : somedata_server} );
+  // socket.broadcast.to('ID').emit( 'send msg', {somedata : somedata_server} );//
+
+
+// class event {  // not being used anywhere yet
+//   constructor(event, time, payload) {
+//     this.event = event;
+//     this.time = time;
+//     this.payload = payload;
+//   }
+// }
