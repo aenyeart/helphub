@@ -2,22 +2,30 @@
 
 Welcome to the Help Hub. This is a place where clients can request help for various issues and receive real-time support from service workers via "help tickets" that contain their specific request.
 
-* Once a request for help is sent from the customer it is logged in the Hub.
-* Once the Hub has received the request, it assigns a unique identifier in the form of a 'ticket number.'
-* The Hub assigns each ticket to a 'Worker' for assignment.
-* When the help is 'delivered' and is complete, the worker sends confirmation to the Hub.
-* The Hub logs the completion and closes the ticket.
-* Everyone goes home happy.
+## Problem Domain
+
+- Build a application with a support/service center where customers place requests for help (tickets) and service workers assist and close tickets.
+
+## User Stories
+
+- As a Customer, I want to request help and have a Service Worker assist me.
+- As a Service Worker I want to be assigned a help ticket assigned to a Customer's id.
+- As a customer, I want to alert the system when I place in a help request and a ticket has been issued to me.
+- As a service worker, I want to alert the system when a "help" ticket has been requested.
+- As a service worker, I want to alert the system when the "help" ticket is in progress with the customer.
+- As a customer, I want to alert the system when help is in progress. 
+- As a service Worker, I want to alert the system when the "help" ticket is complete.
+- As a Customer, I want to be disconnected and my help ticket closed when "help" is complete.
 
 ## UML 
 
 ![Help Center UML](UML.jpg)
 
 ## Authors
-**Andrew 'I have a question' Enyeart**
-**Jacob 'insert clever saying here' Choi**
-**Señor Joey "Call me Joey" Hernandez**
-**Dario 'the kid' Vitorte**
+**Andrew** *'I have a question'* **Enyeart**
+**Jacob** *'insert clever saying here'* **Choi**
+**Señor Joey** *"Call me Joey"* **Hernandez**
+**Dario** *'the invisible kid'* **Vitorte**
 
 ### Deployed Site
 [This is the deployed site](thisIsTheHroku.com)
@@ -100,7 +108,7 @@ Ticket', {
 
 **Help Ticket Assignment**
 
-* When the object is passed, a help ticket is assigned with a unique number.
+* When the object is passed, a help ticket is assigned with a unique number (id).
 * tickets are received and logged.
 * tickets are closed when help is complete.
 
@@ -114,4 +122,4 @@ The testing serves to verify complete testing of the routers middleware, and the
 
 ### Credit and Co-Conspirators
 
-This lovely code was largley written by the immaculate **Andrew Enyeart** and **Jacob Choi**. **Joey Hernandez** dutifully provided snarky commentary and moral support, some coding, some writing (as you are reading) yup. No one is really sure where **Dario Diorte** is at the moment, but we are hoping for a full recovery.
+This lovely code was largely written by the immaculate **Andrew Enyeart** and **Jacob Choi**. **Joey Hernandez** dutifully provided snarky commentary and moral support, some coding, some writing (as you are reading) and, yup. No one is really sure where **Dario Diorte** is, we were thinking homing pigeons next, maybe.
