@@ -26,7 +26,7 @@ function logger(event, payload) {
 // HelpHub connected 
 helpHub.on('connection', (socket) => {
   console.log(`New socket is connected: ${socket.id}`);
-  socket.emit('Ready For Request', { customerSocket: socket.id }); // emit to CUSTOMER helphub is ready
+  socket.emit('Ready For Request', { clientSocket: socket.id }); // emit to CUSTOMER helphub is ready
 
   socket.on('Help Requested', (payload) => { 
     logger('Help Requested', payload); // log help requested
@@ -46,7 +46,6 @@ helpHub.on('connection', (socket) => {
     */
 
 
-
     logger('Ticket Generated', ticket); // log ticket generation
   });
   // when WORKER client signs in or completes a ticket, emits "standing by"
@@ -57,8 +56,11 @@ helpHub.on('connection', (socket) => {
 
     if (queue.tickets.length > 0) {
       let currentTicket = queue.removeTicket();
+      console.log(`TICKET POPPED FROM QUEUE`);
+      console.log(currentTicket);
+      console.log('queue.tickets', queue.tickets);
       socket.emit('Assigning Ticket', currentTicket); // this goes to WORKER
-      socket.broadcast.to(payload.ticket.id).emit('Assigning Ticket', currentTicket); // this goes to CUSTOMER
+      socket.broadcast.to(payload.id).emit('Assigning Ticket', currentTicket); // this goes to CUSTOMER
     } else {
       socket.emit('No tickets available'); // this goes to WORKER
     }
@@ -89,15 +91,15 @@ ORDER OF OPERATIONS:
 - WORKER sends 'complete' to hub ('delivered')
 
 */
- // // --> CUSTOMER logs 'complete', disconnects socket
-  //   socket.on("Help Complete Disconnecting", () => {
-  //     console.log(socket.id); // the Set contains at least the socket ID
-  //   });
+// // --> CUSTOMER logs 'complete', disconnects socket
+//   socket.on("Help Complete Disconnecting", () => {
+//     console.log(socket.id); // the Set contains at least the socket ID
+//   });
   
-  //   socket.on("disconnect", () => {
-  //     // socket.rooms.size === 0
-  //   });
-  // });
+//   socket.on("disconnect", () => {
+//     // socket.rooms.size === 0
+//   });
+// });
 
 
 
