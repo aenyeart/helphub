@@ -22,20 +22,23 @@ Welcome to the Help Hub. This is a place where clients can request help for vari
 ![Help Center UML](UML.jpg)
 
 ## Authors
+
 **Andrew** *'I have a question'* **Enyeart**
 **Jacob** *'insert clever saying here'* **Choi**
-**Señor Joey** *"Call me Joey"* **Hernandez**
+**Señor Joey** *'Call me Joey'* **Hernandez**
 **Dario** *'the invisible kid'* **Vitorte**
 
 ### Deployed Site
+
 [This is the deployed site](thisIsTheHroku.com)
 
 ### Installation
 
 **Step One**
 
-begin by running: `git clone` git@github.com:aenyeart/helphub.git 
-Also run this as well: `git clone` git@github.com:aenyeart/helphub-client.git
+- begin by running: `git clone` git@github.com:aenyeart/helphub.git 
+
+- Also run this as well: `git clone` git@github.com:aenyeart/helphub-client.git
 
 **Step Two**
 
@@ -94,23 +97,29 @@ Ticket', {
 
 **Customer**
 
-`POST /request`, requires a customer object: returns created customer object from database.
+`POST /request`, requires a Customer object: returns customer username and 'help' request description.
 
 **Service Worker**
 
-`POST /worker`, requires a user object: returns worker object from database with token.
+`POST /worker`, requires a Worker object: returns Worker name and id.
 
 **Help Tickets**
 
-`GET /tickets`, requires a validated token: returns array containing the help ticket request in the database.
+`GET /tickets`, requires a Ticket object: returns array containing the help ticket request description and a unique id.
 
 ## Features
 
-**Help Ticket Assignment**
+**Help Ticket Assignment to Completion**
 
-* When the object is passed, a help ticket is assigned with a unique number (id).
-* tickets are received and logged.
-* tickets are closed when help is complete.
+- When the object is passed, a help ticket is created and an emit 'Help Requested'.
+
+- The Help Ticket is given a unique identifier (id) and an emit 'Ticket Generated'.
+
+- The Help Ticket is then assigned to a worker who is 'Standing By' and an emit 'Assigning Ticket'.
+
+- Help Tickets are received and logged and given an emit 'In Progress'.
+
+- When the 'help' is complete the Help Ticket is removed from the queue and given an emit 'Complete'. Tickets are logged and closed and the Customer is disconnected from the socket.
 
 **Error Handling**
 
@@ -122,4 +131,5 @@ The testing serves to verify complete testing of the routers middleware, and the
 
 ### Credit and Co-Conspirators
 
-This lovely code was largely written by the immaculate **Andrew Enyeart** and **Jacob Choi**. **Joey Hernandez** dutifully provided snarky commentary and moral support, some coding, some writing (as you are reading) and, yup. No one is really sure where **Dario Diorte** is, we were thinking homing pigeons next, maybe.
+This lovely code was largely written by the immaculate **Andrew Enyeart** and **Jacob Choi**. **Joey Hernandez** dutifully provided snarky commentary and moral support, some coding, some writing (as you are reading) and, yup. 
+*No one is really sure where **Dario Diorte** is, we were thinking homing pigeons next, maybe.*
